@@ -1,0 +1,1 @@
+# Dockerized Magento Community Edition 1.x

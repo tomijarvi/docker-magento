@@ -1,0 +1,41 @@
+version: '2'
+services:
+    db:
+        image: lots0logs/mariadb-alpine
+        restart: always
+        volumes:
+            - ./data/mysql:/var/lib/mysql
+            - ./docker/db/dump.sql.gz:/docker-entrypoint-initdb.d/dump.sql.gz
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: magento
+    nginx:
+        build: ./docker/nginx
+        restart: always
+        ports:
+            - 80:80
+            - 433:433
+        depends_on: 
+            - php
+        volumes_from:
+            - php
+    php:
+        build: ./docker/php
+        env_file:
+            - .env
+        restart: always
+        depends_on: 
+            - db
+        volumes:
+            - ./app:/var/www/html
+        environment:
+            XDEBUG_CONFIG: remote_host=${XDEBUG_HOST} remote_port=${XDEBUG_PORT} idekey=${XDEBUG_IDEKEY}
+            PHP_IDE_CONFIG: serverName=localhost
+    pma:
+        image: phpmyadmin/phpmyadmin
+        restart: always
+        ports:
+            - 8080:80
+        depends_on:
+            - db
+    

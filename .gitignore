@@ -1,0 +1,5 @@
+*.sql
+*.gz
+.env
+app/
+data/
